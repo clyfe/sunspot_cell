@@ -11,8 +11,6 @@ module Sunspot
       return false
     end
 
-
-
     def add(connection)
       params = {
         :wt => :ruby
@@ -35,7 +33,11 @@ module Sunspot
       end
 
       solr_message = params
-      connection.send('update/extract', solr_message, data)
+      begin
+        connection.send('update/extract', solr_message, data)
+      rescue Errno::ECONNRESET
+        # nothing
+      end
     end
   end
 end
