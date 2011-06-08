@@ -16,11 +16,9 @@ module Sunspot
         :wt => :ruby
       }
 
-      data = nil
-
       @fields.each do |f|
         if f.name.to_s.include?("_attachment") and f.value.present?
-          data = f.value
+          params['stream.file'] = f.value
           params['fmap.content'] = f.name
         else
           param_name = "literal.#{f.name.to_s}"
@@ -34,8 +32,8 @@ module Sunspot
 
       solr_message = params
       begin
-        connection.send('update/extract', solr_message, data)
-      rescue Errno::ECONNRESET
+        connection.send('update/extract', solr_message)
+      rescue Errno::ECONNRESET, RSolr::RequestError
         # nothing
       end
     end
