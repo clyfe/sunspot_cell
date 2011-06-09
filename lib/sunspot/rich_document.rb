@@ -18,7 +18,6 @@ module Sunspot
 
       @fields.each do |f|
         if f.name.to_s.include?("_attachment") and f.value.present?
-          params["resource.name"] = f.value # TIKA-154 workaround
           params['stream.file'] = f.value
           params['fmap.content'] = f.name
         else
@@ -34,7 +33,7 @@ module Sunspot
       begin
         connection.send('update/extract', params)
       rescue Errno::ECONNRESET, RSolr::RequestError => e
-        Rails.logger.warn e.to_s
+        ::Rails.logger.warn e.to_s
       end
     end
   end
